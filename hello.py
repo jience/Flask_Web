@@ -1,4 +1,4 @@
-from flask import Flask, redirect
+from flask import Flask, render_template
 from flask_script import Manager
 
 app = Flask(__name__)
@@ -7,12 +7,12 @@ manager = Manager(app)
 
 @app.route('/')
 def index():
-    return redirect('http://www.baidu.com')
+    return render_template('index.html')
 
 
 @app.route('/user/<username>')
 def user(username):
-    return "<h1>Hello, %s</h1>" % username
+    return render_template('user.html', username=username)
 
 
 if __name__ == '__main__':
