@@ -1,6 +1,8 @@
 from flask import Flask, redirect
+from flask_script import Manager
 
 app = Flask(__name__)
+manager = Manager(app)
 
 
 @app.route('/')
@@ -14,4 +16,4 @@ def user(username):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    manager.run()
