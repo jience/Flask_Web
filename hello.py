@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, session, redirect, url_for, flash
-from flask_script import Manager
+from flask_script import Manager, Shell
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from datetime import datetime
@@ -79,6 +79,12 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
+
+def make_shell_context():
+    return dict(app=app, db=db, User=User, Role=Role)
+
+
+manager.add_command("shell", Shell(make_context=make_shell_context))
 
 if __name__ == '__main__':
     manager.run()
