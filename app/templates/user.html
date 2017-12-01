@@ -4,8 +4,10 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Hello, {{ user.username }}!</h1>
-    {% if user.name or user.location %}
+    <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
+    <div class="profile-header">
+        <h1>{{ user.username }}!</h1>
+        {% if user.name or user.location %}
     <p>
         {% if user.name %}{{ user.name }}{% endif %}
         {% if user.location %}
@@ -29,5 +31,6 @@
         <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">Edit Profile [Admin]</a>
         {% endif %}
     </p>
+    </div>
 </div>
 {% endblock %}
