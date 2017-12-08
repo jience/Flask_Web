@@ -8,6 +8,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_RECORD_QUERIES = True
+    SSL_REDIRECT = False
     MAIL_SERVER = 'smtp.163.com'
     MAIL_PORT = 25
     MAIL_USE_TLS = True
@@ -67,10 +68,44 @@ class ProductionConfig(Config):
         app.logger.addHandler(mail_handler)
 
 
+class HerokuConfig(ProductionConfig):
+    SSL_REDIRECT = True if os.environ.get('DYNO') else False
+
+    @classmethod
+    def init_app(cls, app):
+        ProductionConfig.init_app(app)
+
+        # handle reverse proxy server headers
+        from werkzeug.contrib.fixers import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app)
+
+        # log to stderr
+        import logging
+        from logging import StreamHandler
+        file_handler = StreamHandler()
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+
+
+class DockerConfig(ProductionConfig):
+    @classmethod
+    def init_app(cls, app):
+        ProductionConfig.init_app(app)
+
+        # log to stderr
+        import logging
+        from logging import StreamHandler
+        file_handler = StreamHandler()
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+
+
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
+    'heroku': HerokuConfig,
+    'docker': DockerConfig,
 
-    'default': ProductionConfig
+    'default': DevelopmentConfig
 }
